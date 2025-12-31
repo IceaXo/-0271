@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.E.E.S. Mall - 影时间数码店</title>
+    <style>
+        /* ================= PERSONA 3 THEME ================= */
+        :root {
+            --p3-blue: #001e43;
+            --p3-light-blue: #00b0ff;
+            --p3-bg: #000d1c;
+            --p3-white: #ffffff;
+            --p3-yellow: #fefe00;
+        }
+        body {
+            background-color: var(--p3-blue);
+            font-family: 'Impact', 'Segoe UI Black', sans-serif;
+            color: var(--p3-white);
+            margin: 0;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(135deg, #001e43 0%, #000d1c 100%);
+            background-size: 20px 20px, 100% 100%;
+        }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        
+        .navbar {
+            background: rgba(0,0,0,0.8);
+            border-bottom: 2px solid var(--p3-light-blue);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .nav-brand {
+            font-size: 2rem;
+            color: var(--p3-light-blue);
+            text-transform: uppercase;
+            transform: skewX(-15deg);
+            text-shadow: 2px 2px 0 #000;
+        }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-btn {
+            background: var(--p3-white);
+            color: black;
+            padding: 8px 20px;
+            font-weight: bold;
+            transform: skewX(-15deg);
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        .nav-btn:hover {
+            background: var(--p3-light-blue);
+            color: white;
+            box-shadow: 0 0 10px var(--p3-light-blue);
+        }
+        .nav-btn-outline {
+            background: transparent;
+            border: 2px solid var(--p3-white);
+            color: var(--p3-white);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        .header-title {
+            font-size: 4rem;
+            text-align: right;
+            border-bottom: 5px solid var(--p3-light-blue);
+            margin-bottom: 50px;
+            transform: skewY(-2deg);
+            text-shadow: 5px 5px 0 #000;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .card {
+            background: rgba(0, 15, 30, 0.9);
+            border: 1px solid var(--p3-light-blue);
+            position: relative;
+            transition: transform 0.3s;
+            overflow: hidden;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+        }
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 0 20px var(--p3-light-blue);
+            background: #002855;
+        }
+        
+        .card-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-bottom: 2px solid var(--p3-light-blue);
+            filter: grayscale(30%);
+        }
+        .card:hover .card-img { filter: grayscale(0%); }
+
+        .card-body { padding: 20px; }
+        
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--p3-light-blue);
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+        }
+        .card-text {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.9rem;
+            color: #ccc;
+            height: 3rem;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px dashed rgba(255,255,255,0.3);
+            padding-top: 15px;
+        }
+        
+        .price-tag {
+            font-size: 1.8rem;
+            color: var(--p3-yellow);
+        }
+        
+        .btn-buy {
+            background: var(--p3-light-blue);
+            border: none;
+            color: black;
+            padding: 5px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transform: skewX(-10deg);
+        }
+        .btn-buy:hover { background: white; }
+
+        .moon-bg {
+            position: fixed;
+            bottom: -50px;
+            right: -50px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: var(--p3-light-blue);
+            opacity: 0.1;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* === 支付弹窗样式 === */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+        .pay-modal {
+            background: #001e43;
+            border: 4px solid var(--p3-yellow);
+            padding: 30px;
+            width: 400px;
+            transform: skewX(-10deg);
+            box-shadow: 0 0 30px var(--p3-yellow);
+            text-align: center;
+        }
+        .pay-modal h2 { color: var(--p3-yellow); margin-top: 0; font-size: 2rem;}
+        .pay-info { font-family: 'Arial'; margin: 20px 0; font-size: 1.2rem; color: #fff;}
+        .pay-btn-group { display: flex; gap: 20px; justify-content: center; margin-top: 30px;}
+        .btn-confirm {
+            background: var(--p3-yellow); color: black; padding: 10px 30px;
+            font-weight: bold; cursor: pointer; border: none; font-size: 1.2rem;
+            font-family: 'Impact';
+        }
+        .btn-cancel {
+            background: #333; color: white; padding: 10px 30px;
+            font-weight: bold; cursor: pointer; border: none; font-size: 1.2rem;
+            font-family: 'Impact';
+        }
+    </style>
+</head>
+<body>
+
+<div class="moon-bg"></div>
+
+<!-- 支付确认弹窗 -->
+<div id="payModal" class="modal-overlay">
+    <div class="pay-modal">
+        <div style="transform: skewX(10deg);">
+            <h2>CONFIRM PAYMENT</h2>
+            <div class="pay-info">
+                Item: <span id="modal-pname" style="color:var(--p3-cyan)"></span><br>
+                Price: <span id="modal-price" style="color:var(--p3-yellow)"></span>
+            </div>
+            <p style="font-family:'Arial'; font-size:0.9rem; color:#aaa;">Secure Payment Gateway via Kirijo Group</p>
+            
+            <div class="pay-btn-group">
+                <button onclick="closeModal()" class="btn-cancel">CANCEL</button>
+                <!-- 真正的提交表单 -->
+                <form id="realForm" th:action="@{/buy}" method="post">
+                    <input type="hidden" name="productId" id="modal-pid">
+                    <button type="submit" class="btn-confirm">PAY NOW</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<nav class="navbar">
+    <a class="nav-brand" href="/">S.E.E.S MALL</a>
+    <div class="nav-links">
+        <a class="nav-btn nav-btn-outline" href="/">HOME</a>
+        <span th:if="${session.user == null}">
+            <a class="nav-btn" href="/login">LOGIN</a>
+            <a class="nav-btn" href="/register" style="background:var(--p3-yellow);">JOIN US</a>
+        </span>
+        <span th:if="${session.user != null}" style="display:flex; gap:10px; align-items:center;">
+            <span style="font-family:Arial; font-size:0.9rem;">USER: <strong th:text="${session.user.username}" style="color:var(--p3-light-blue)"> Joker </strong></span>
+            <a class="nav-btn nav-btn-outline" href="/orders">ORDERS</a>
+            <a class="nav-btn" href="/logout" style="background:#ff3333; color:white;">LOGOUT</a>
+            <a th:if="${session.user.role == 'ADMIN'}" class="nav-btn" href="/admin/orders" style="background:var(--p3-yellow);">ADMIN</a>
+        </span>
+    </div>
+</nav>
+
+<div class="container">
+    <h1 class="header-title">DARK HOUR SALE</h1>
+    <div th:if="${param.error}" style="color:red; text-align:center; margin-bottom:20px; font-weight:bold; font-size:1.5rem; background:rgba(0,0,0,0.5); padding:10px;">
+        ⚠️ SYSTEM ERROR: <span th:text="${param.error}"></span>
+    </div>
+
+    <div class="product-grid">
+        <div class="card" th:each="p : ${productList}">
+            <img th:src="'https://placehold.jp/24/00b0ff/001e43/300x200.png?text=' + ${p.name}" class="card-img" alt="Item">
+            <div class="card-body">
+                <h2 class="card-title" th:text="${p.name}">Mediarahan</h2>
+                <p class="card-text" th:text="${p.description}">Restore full HP to all allies.</p>
+                <div class="card-footer">
+                    <span class="price-tag">¥<span th:text="${p.price}">5000</span></span>
+                    
+                    <!-- 修改：不直接提交，而是触发弹窗 -->
+                    <button th:onclick="openModal([[${p.id}]], [[${p.name}]], [[${p.price}]])" class="btn-buy">BUY NOW</button>
+                </div>
+                <div style="font-size:0.8rem; color:grey; margin-top:5px;">
+                    STOCK: <span th:text="${p.stock}" th:style="${p.stock < 5} ? 'color:red' : ''">99</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(id, name, price) {
+        document.getElementById('modal-pid').value = id;
+        document.getElementById('modal-pname').innerText = name;
+        document.getElementById('modal-price').innerText = '¥' + price;
+        document.getElementById('payModal').style.display = 'flex';
+    }
+    function closeModal() {
+        document.getElementById('payModal').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>S.E.E.S. User Management</title>
+    <style>
+        :root { --p3-blue: #001e43; --p3-cyan: #00b0ff; --p3-white: #ffffff; --p3-red: #ff3333; }
+        body {
+            background-color: var(--p3-blue);
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--p3-white);
+            padding: 20px;
+        }
+        h1 { border-left: 10px solid var(--p3-cyan); padding-left: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: rgba(0,0,0,0.5); }
+        th, td { border: 1px solid var(--p3-cyan); padding: 10px; text-align: left; }
+        th { background-color: var(--p3-cyan); color: black; }
+        
+        .btn-del {
+            background: var(--p3-red); color: white; padding: 5px 10px; text-decoration: none; font-weight: bold;
+        }
+        .btn-back { display:inline-block; margin-top:20px; color: var(--p3-cyan); text-decoration: none; border: 1px solid var(--p3-cyan); padding: 10px; }
+    </style>
+</head>
+<body>
+
+<h1>PERSONA DATABASE // 用户管理</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>CODENAME (用户名)</th>
+            <th>EMAIL</th>
+            <th>ROLE</th>
+            <th>ACTION</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="u : ${userList}">
+            <td th:text="${u.id}">1</td>
+            <td th:text="${u.username}">Joker</td>
+            <td th:text="${u.email}">joker@sees.com</td>
+            <td th:text="${u.role}" style="font-weight:bold; color:#fefe00;">USER</td>
+            <td>
+                <a th:if="${u.username != 'admin'}" 
+                   th:href="@{/admin/user/delete/{id}(id=${u.id})}" 
+                   class="btn-del" onclick="return confirm('Erase this persona?');">DELETE</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<a href="/admin/products" class="btn-back">BACK TO COMMAND</a>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>S.E.E.S Contract - 注册</title>
+    <style>
+        body {
+            background-color: #001e43;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Impact', sans-serif;
+            margin: 0;
+            background: #000d1c;
+            overflow: hidden;
+        }
+        /* 背景大圆环装饰 */
+        .ring {
+            position: absolute;
+            width: 80vh; height: 80vh;
+            border: 50px solid rgba(0, 176, 255, 0.05);
+            border-radius: 50%;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+
+        .reg-box {
+            width: 450px;
+            background: #00b0ff;
+            padding: 5px; /* 边框厚度 */
+            transform: skewX(-5deg);
+            box-shadow: 0 0 50px rgba(0, 176, 255, 0.3);
+        }
+        .inner-box {
+            background: #fff;
+            padding: 40px;
+        }
+        
+        h2 { margin: 0 0 20px 0; font-size: 2rem; color: #001e43; text-transform: uppercase;}
+        p { font-family: 'Arial'; color: #666; font-size: 0.9rem; margin-bottom: 30px;}
+
+        label { display: block; font-family: 'Arial'; font-weight: bold; margin-bottom: 5px; color: #001e43;}
+        input {
+            width: 100%; padding: 10px; margin-bottom: 15px;
+            border: 2px solid #ccc; font-family: 'Arial'; box-sizing: border-box;
+        }
+        input:focus { border-color: #001e43; background: #e0f7fa; outline:none;}
+
+        .btn-reg {
+            width: 100%; padding: 15px; background: #fefe00; 
+            color: #001e43; border: none; font-size: 1.2rem; font-weight: bold;
+            cursor: pointer; font-family: 'Impact'; letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        .btn-reg:hover { background: #001e43; color: #fefe00; }
+
+        .alert-error { color: red; font-family: 'Arial'; font-size: 0.9rem; margin-bottom: 10px;}
+    </style>
+</head>
+<body>
+    <div class="ring"></div>
+
+    <div class="reg-box">
+        <div class="inner-box">
+            <h2>New Contract</h2>
+            <p>I choose this fate of my own free will.</p>
+
+            <form th:action="@{/register}" method="post">
+                <label>CODENAME (用户名)</label>
+                <input type="text" name="username" required>
+
+                <label>CONTACT (邮箱)</label>
+                <input type="email" name="email" required>
+
+                <label>KEY (密码)</label>
+                <input type="password" name="password" required>
+
+                <div th:if="${error}" class="alert-error" th:text="${error}">Error Info</div>
+
+                <button type="submit" class="btn-reg">SIGN CONTRACT</button>
+            </form>
+
+            <div style="text-align: center; margin-top: 20px; font-family: 'Arial'; font-size: 0.8rem;">
+                ALREADY SIGNED? <a href="/login" style="color: #001e43; font-weight: bold;">LOGIN HERE</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

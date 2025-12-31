@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>S.E.E.S. Analytics // 销售分析</title>
+    <!-- 引入 ECharts 图表库 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --p3-blue: #001e43;
+            --p3-cyan: #00b0ff;
+            --p3-white: #ffffff;
+        }
+        body {
+            background-color: var(--p3-blue);
+            color: var(--p3-white);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            /* 背景纹理 */
+            background-image: 
+                linear-gradient(rgba(0, 176, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 176, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            border-left: 10px solid var(--p3-cyan);
+            padding-left: 20px;
+            text-transform: uppercase;
+            font-style: italic;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        /* 图表容器 */
+        #main-chart {
+            width: 100%;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--p3-cyan);
+            box-shadow: 10px 10px 0 #000;
+            margin-bottom: 30px;
+        }
+
+        .btn-back {
+            background: var(--p3-white);
+            color: black;
+            padding: 10px 30px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            transform: skewX(-10deg);
+        }
+        .btn-back:hover {
+            background: var(--p3-cyan);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Tactical Support / Sales Data</h1>
+    
+    <!-- 图表挂载点 -->
+    <div id="main-chart"></div>
+    
+    <div style="text-align: center;">
+        <a href="/admin/products" class="btn-back">BACK TO COMMAND</a>
+    </div>
+</div>
+
+<script>
+    // 1. 初始化图表
+    var myChart = echarts.init(document.getElementById('main-chart'));
+
+    // 2. 配置项 (P3 风格)
+    var option = {
+        backgroundColor: 'rgba(0,0,0,0)',
+        title: {
+            text: 'WEEKLY REVENUE // 周营收趋势',
+            left: 'center',
+            textStyle: { color: '#00b0ff', fontFamily: 'Impact', fontSize: 24 }
+        },
+        tooltip: { trigger: 'axis' },
+        xAxis: {
+            type: 'category',
+            data: [], // 等待填充
+            axisLine: { lineStyle: { color: '#fff' } },
+            axisLabel: { color: '#fff' }
+        },
+        yAxis: {
+            type: 'value',
+            axisLine: { lineStyle: { color: '#fff' } },
+            axisLabel: { color: '#fff' },
+            splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+        },
+        series: [{
+            data: [], // 等待填充
+            type: 'line',
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 10,
+            itemStyle: { color: '#fefe00' },
+            lineStyle: { color: '#00b0ff', width: 4 },
+            areaStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: 'rgba(0, 176, 255, 0.5)' },
+                    { offset: 1, color: 'rgba(0, 176, 255, 0)' }
+                ])
+            }
+        }]
+    };
+
+    // 3. 从后台获取真实数据
+    fetch('/api/admin/stats-data')
+        .then(response => response.json())
+        .then(data => {
+            // 解析数据：把 day 放到 X轴，把 total 放到 Y轴
+            var days = data.map(item => item.day);
+            var totals = data.map(item => item.total);
+
+            // 更新图表
+            myChart.setOption({
+                xAxis: { data: days },
+                series: [{ data: totals }]
+            });
+        })
+        .catch(err => {
+            console.error('Fetch error:', err);
+            // 如果没数据，给个假数据演示一下，防止空着难看
+            myChart.setOption({
+                title: { subtext: 'NO DATA YET - SHOWING SIMULATION' },
+                xAxis: { data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+                series: [{ data: [0, 0, 0, 0, 0, 0, 0] }] 
+            });
+        });
+
+    // 渲染
+    myChart.setOption(option);
+</script>
+
+</body>
+</html>

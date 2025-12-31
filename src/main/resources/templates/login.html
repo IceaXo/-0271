@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>S.E.E.S Access</title>
+    <style>
+        body {
+            background-color: #001e43;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Impact', sans-serif;
+            margin: 0;
+            background-image: linear-gradient(45deg, #001e43 25%, #000d1c 25%, #000d1c 50%, #001e43 50%, #001e43 75%, #000d1c 75%, #000d1c 100%);
+            background-size: 40px 40px;
+        }
+        .login-box {
+            width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            transform: skewX(-10deg); /* 倾斜 */
+            box-shadow: 20px 20px 0 #00b0ff;
+            border: 2px solid #00b0ff;
+        }
+        .content-fix { transform: skewX(10deg); /* 内容回正 */ }
+        
+        h2 { text-transform: uppercase; color: #001e43; font-size: 2.5rem; margin-bottom: 30px; border-bottom: 4px solid #00b0ff; display: inline-block;}
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #001e43;
+            background: #eee;
+            font-family: 'Arial';
+            font-weight: bold;
+            box-sizing: border-box; /* 防止撑破 */
+        }
+        input:focus { outline: none; border-color: #00b0ff; background: #fff; }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: #001e43;
+            color: #00b0ff;
+            border: none;
+            font-size: 1.5rem;
+            font-family: 'Impact';
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-submit:hover { background: #00b0ff; color: #001e43; }
+        
+        .link-reg { display: block; margin-top: 20px; color: #666; font-family: 'Arial'; font-size: 0.9rem; text-decoration: none;}
+        .link-reg:hover { color: #00b0ff; text-decoration: underline; }
+
+        .error-msg { color: red; font-family: 'Arial'; margin-bottom: 10px; font-weight: bold;}
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="content-fix">
+            <h2>System Login</h2>
+            
+            <form action="/login" method="post">
+                <input type="text" name="username" placeholder="USERNAME // 代号" required>
+                <input type="password" name="password" placeholder="PASSWORD // 密钥" required>
+                
+                <div th:if="${error}" class="error-msg" th:text="${error}">Error Message</div>
+                
+                <button type="submit" class="btn-submit">ACCESS GRANTED</button>
+            </form>
+            
+            <a href="/register" class="link-reg">NO ACCOUNT? SIGN A CONTRACT ></a>
+            <div style="text-align:right; margin-top:10px;"><a href="/" class="link-reg">BACK TO HOME</a></div>
+        </div>
+    </div>
+</body>
+</html>

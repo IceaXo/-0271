@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction History</title>
+    <style>
+        :root { --p3-blue: #001e43; --p3-cyan: #00b0ff; --p3-white: #ffffff; --p3-yellow: #fefe00; }
+        body {
+            background-color: var(--p3-blue);
+            color: var(--p3-white);
+            font-family: 'Segoe UI', 'Impact', sans-serif;
+            margin: 0; padding: 20px;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        /* 顶部导航样式 */
+        .top-nav { margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: flex-end; }
+        .nav-btn { text-decoration: none; padding: 5px 10px; font-weight: bold; background: var(--p3-cyan); color: black; transform: skewX(-10deg); }
+        .nav-btn:hover { background: white; }
+
+        h2 { 
+            font-size: 2.5rem; text-transform: uppercase; 
+            border-bottom: 4px solid var(--p3-cyan); padding-bottom: 10px;
+        }
+        .admin-view h2 { border-color: var(--p3-yellow); color: var(--p3-yellow); }
+
+        .order-card {
+            background: rgba(0, 15, 30, 0.9);
+            border: 2px solid var(--p3-white);
+            margin-bottom: 20px; padding: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            transform: skewX(-5deg); transition: 0.2s;
+        }
+        .order-card:hover { transform: translateX(10px) skewX(-5deg); border-color: var(--p3-cyan); }
+        
+        .content { transform: skewX(5deg); display: flex; width: 100%; justify-content: space-between; align-items: center; }
+        
+        .info-col { display: flex; flex-direction: column; }
+        .label { font-size: 0.8rem; color: var(--p3-cyan); }
+        .val { font-size: 1.2rem; font-weight: bold; }
+        
+        .btn-ship {
+            background: var(--p3-yellow); color: black; padding: 10px 20px;
+            text-decoration: none; font-weight: bold; font-family: 'Impact';
+            transform: skewX(-10deg); border: 2px solid black;
+        }
+        .btn-ship:hover { background: white; }
+        
+        .status-badge { padding: 5px 10px; background: var(--p3-cyan); color: black; font-weight: bold; }
+        .status-shipped { background: #00ff00; }
+
+        .btn-back { display:block; text-align:center; margin-top:30px; color: var(--p3-cyan); text-decoration: none; font-size: 1.2rem; }
+    </style>
+</head>
+<body th:class="${session.user != null && session.user.role == 'ADMIN'} ? 'admin-view' : ''">
+
+<div class="top-nav" th:if="${session.user != null}">
+    <span style="font-family:Arial; font-size:0.9rem; margin-right:auto;">USER: <strong th:text="${session.user.username}" style="color:var(--p3-cyan)"> Joker </strong></span>
+    
+    <a class="nav-btn" href="/">HOME</a>
+    <a class="nav-btn" href="/logout" style="background:#ff3333; color:white;">LOGOUT</a>
+</div>
+
+<div class="container" th:if="${session.user != null}">
+    <h2 th:text="${session.user.role == 'ADMIN'} ? 'ORDER COMMAND (ALL)' : 'MY ORDERS'">History</h2>
+
+    <div th:if="${orderList.isEmpty()}" style="text-align:center; color:grey; font-size:1.5rem;">NO DATA...</div>
+
+    <div class="order-card" th:each="o : ${orderList}">
+        <div class="content">
+            <div class="info-col" style="width: 20%">
+                <span class="label">ORDER ID</span>
+                <span class="val" th:text="'#' + ${o.id}">#101</span>
+                <span th:if="${session.user.role == 'ADMIN'}" style="font-size:0.8rem; color:#aaa;" th:text="'User ID: ' + ${o.userId}">U:1</span>
+            </div>
+
+            <div class="info-col" style="width: 20%">
+                <span class="label">AMOUNT</span>
+                <span class="val" style="color:var(--p3-cyan)" th:text="'¥' + ${o.totalAmount}">¥999</span>
+            </div>
+
+            <div class="info-col" style="width: 30%">
+                <span class="label">DATE</span>
+                <span class="val" style="font-size:1rem;" th:text="${o.createTime != null ? #temporals.format(o.createTime, 'yyyy-MM-dd HH:mm') : 'N/A'}">Time</span>
+            </div>
+
+            <div class="info-col" style="align-items: flex-end; width: 30%">
+                <span th:if="${o.status == '待发货'}" class="status-badge">PENDING</span>
+                <span th:if="${o.status == '已发货'}" class="status-badge status-shipped">SHIPPED</span>
+                
+                <div th:if="${session.user.role == 'ADMIN' and o.status == '待发货'}" style="margin-top:10px;">
+                    <a th:href="@{/admin/order/ship/{id}(id=${o.id})}" class="btn-ship">SHIP NOW</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="/" class="btn-back">BACK TO HOME</a>
+</div>
+
+</body>
+</html>
